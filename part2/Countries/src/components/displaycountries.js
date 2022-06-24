@@ -42,7 +42,7 @@ const DisplayCountries = ({ countries, newFilter }) => {
 
   useEffect(() => {
     console.log('effect 2');
-    const appid = '4156067dcff6aa8488a29cbc3cb634cc'
+    const appid = 'sampletoken'
     if (CountriesToShow.length == 1) {
       axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${CountriesToShow[0].latlng[0]}&lon=${CountriesToShow[0].latlng[1]}&appid=${appid}`)
         .then(response => setWeatherdata(response))
