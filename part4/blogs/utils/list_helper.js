@@ -11,7 +11,7 @@ const totalLikes = (blogs) => {
 }
 
 const favouriteBlog = (blogs) => {
-  //pending for now
+  //pending
   return blogs
 }
 
