@@ -1,3 +1,7 @@
 POST http://localhost:3001/api/notes 
-Content-Type: application/json
-c
+content-type: application/json
+
+{
+  "content": "this is very very important",
+  "important": true
+}
