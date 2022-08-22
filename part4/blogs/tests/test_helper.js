@@ -20,6 +20,13 @@ const blogsInDb = async () => {
   return blogs.map(blog => blog.toJSON())
 }
 
+const newBlog = {
+  title: 'this is a new addition',
+  author: 'mr. addition',
+  url: 'abcd.com',
+  likes: 24
+}
+
 module.exports = {
-  initialBlogs, blogsInDb
+  initialBlogs, blogsInDb, newBlog
 }
