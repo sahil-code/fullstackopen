@@ -1,10 +1,10 @@
 POST http://localhost:3001/api/blogs
 content-type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNhaGlsMjMiLCJpZCI6IjYzMDY1YWYwMWJjZTQxMzdlNjVjYTQxYSIsImlhdCI6MTY2MTM2MTAwNiwiZXhwIjoxNjYxMzY0NjA2fQ.4gpTlQv852r9ecr0YAUnU0SBP4n2PbcFrMr_J_OPGro
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNhaGlsMjMiLCJpZCI6IjYzMDY1YWYwMWJjZTQxMzdlNjVjYTQxYSIsImlhdCI6MTY2MTQ0NDY3NiwiZXhwIjoxNjYxNDQ4Mjc2fQ.in86cp7DcOIs9saS5qjauFygwIf7SY-z9VJafMC--Ck
 
 {
-  "title": "this is very very important",
-  "author": "mr. imp",
+  "title": "let's go",
+  "author": "sahil",
   "url": "abcd.com",
-  "likes": 123
+  "likes": 1
 }

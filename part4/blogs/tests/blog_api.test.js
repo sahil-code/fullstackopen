@@ -3,8 +3,11 @@ const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -17,7 +20,6 @@ beforeEach(async () => {
 describe('when there is initially some blogs saved', () => {
   test('there are correct number of blogs', async () => {
     const response = await api.get('/api/blogs')
-
     expect(response.body).toHaveLength(helper.initialBlogs.length)
   })
 
@@ -36,18 +38,33 @@ describe('when there is initially some blogs saved', () => {
     expect(titles).toContain(helper.initialBlogs[0].title)
   })
 
-})
-
-describe('adding blogs', () => {
   test('there is id field defined', async () => {
     const response = await api.get('/api/blogs')
     expect(response.body[0].id).toBeDefined()
   })
 
+})
+
+describe('adding blogs', () => {
+
+  let token = null
+  beforeAll(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('password2', 10)
+    const user = new User({ passwordHash, ...helper.newUser })
+    await user.save()
+
+    const userForToken = { username: user.username, id: user._id }
+    token = jwt.sign(userForToken, process.env.SECRET)
+  })
+
   test('a valid blog can be added', async () => {
     const newBlog = helper.newBlog
+
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -64,6 +81,7 @@ describe('adding blogs', () => {
     const { likes, ...newBlog } = helper.newBlog
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -76,6 +94,7 @@ describe('adding blogs', () => {
     const { title, url, ...newBlog } = helper.newBlog
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(newBlog)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -85,12 +104,39 @@ describe('adding blogs', () => {
 })
 
 describe('deleting blogs', () => {
+
   test('succeeds with status code 204 if id is valid', async () => {
+    await User.deleteMany({})
+    await Blog.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('password2', 10)
+    const user = new User({ passwordHash, ...helper.newUser })
+    await user.save()
+
+    const userForToken = { username: user.username, id: user._id }
+    token = jwt.sign(userForToken, process.env.SECRET)
+
+    const newBlog = helper.newBlog
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+
+    // eslint-disable-next-line no-unused-vars  
+    const { title, ...secondBlog } = helper.newBlog
+    secondBlog.title = "second blog"
+
+      await api
+        .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
+        .send(secondBlog)
+
     const blogsAtStart = await helper.blogsInDb()
     const blogDeleted = blogsAtStart[0]
 
     await api
       .delete(`/api/blogs/${blogDeleted.id}`)
+      .set('Authorization', `bearer ${token}`)
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
