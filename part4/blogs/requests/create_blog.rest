@@ -1,6 +1,6 @@
 POST http://localhost:3001/api/blogs
 content-type: application/json
-Authorization: bearer 
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNhaGlsIiwiaWQiOiI2MzA2NWE2MDFiY2U0MTM3ZTY1Y2E0MTIiLCJpYXQiOjE2NjE4ODA1MDgsImV4cCI6MTY2MTg4NDEwOH0.oh61Wx3_-JjVOAAKcgLv519jqZuP8h7oZ71EvR2BxVg
 
 {
   "title": "let's go",
