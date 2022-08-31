@@ -167,7 +167,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={notification.message} type={notification.type} />
+      <Notification notification={notification} />
       {user === null ? loginForm() : blogForm()}
 
       <h2>blogs</h2>
