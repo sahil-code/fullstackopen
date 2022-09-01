@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-if (process.argv.length<3) {
+if (process.argv.length < 3) {
   console.log('give password as argument')
   process.exit(1)
 }
@@ -27,7 +27,7 @@ const note = new Note({
 })
 
 // eslint-disable-next-line no-constant-condition
-if ( false ) {
+if (false) {
   note.save().then(() => {
     console.log('note saved!')
     mongoose.connection.close()
