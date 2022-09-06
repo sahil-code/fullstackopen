@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import loginService from '../services/login'
-import noteService from '../services/notes'
+import blogService from '../services/blogs'
 import Togglable from '../components/Togglable'
 import PropTypes from 'prop-types'
 
-const LoginForm = ({ setUser, setErrorMessage }) => {
+const LoginForm = ({ setUser, setNotification }) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -14,16 +14,16 @@ const LoginForm = ({ setUser, setErrorMessage }) => {
     try {
       const user = await loginService.login({ username, password, })
 
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
-      noteService.setToken(user.token)
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
     }
 
     catch (exception) {
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => { setErrorMessage(null) }, 5000)
+      setNotification('Wrong credentials')
+      setTimeout(() => { setNotification(null) }, 5000)
     }
   }
 
@@ -55,7 +55,7 @@ const LoginForm = ({ setUser, setErrorMessage }) => {
 
 LoginForm.propTypes = {
   setUser: PropTypes.func.isRequired,
-  setErrorMessage: PropTypes.func.isRequired
+  setNotification: PropTypes.func.isRequired
 }
 
 export default LoginForm
