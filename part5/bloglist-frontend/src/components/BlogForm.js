@@ -20,6 +20,7 @@ const BlogForm = ({ blogs, setBlogs, setNotification }) => {
       likes: 0,
     })
     try {
+      console.log('adding new blog')
       setBlogs(blogs.concat(newBlog))
       setAuthor('')
       setTitle('')
@@ -50,16 +51,19 @@ const BlogForm = ({ blogs, setBlogs, setNotification }) => {
         <input
           value={title}
           onChange={(event) => { setTitle(event.target.value) }}
+          placeholder='write title here'
         /> <br></br>
         author:
         <input
           value={author}
           onChange={(event) => { setAuthor(event.target.value) }}
+          placeholder='write author here'
         /> <br></br>
         url:
         <input
           value={url}
           onChange={(event) => { setUrl(event.target.value) }}
+          placeholder='write url here'
         /> <br></br>
         <button type="submit">save</button>
       </form>
