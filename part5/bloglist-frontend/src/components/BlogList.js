@@ -31,7 +31,7 @@ const BlogList = ({ blogs, setBlogs, setNotification, user }) => {
     <div>
       <button onClick={() => setBlogs([...blogs].sort((a, b) => b.likes - a.likes))}>sort blogs</button>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} username={user.username} />
+        <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
       )}
     </div>
   )
