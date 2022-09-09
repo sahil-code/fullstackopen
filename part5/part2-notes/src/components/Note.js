@@ -23,7 +23,7 @@ const Note = ({ note, notes, setNotes, setErrorMessage }) => {
 
   return (
     <li className='note' key={note.id}>
-      {note.content}
+      <span>{note.content}</span>
       <button onClick={() => { toggleImportance(note.id) }}>{note.important ? 'make not important' : 'make important'}</button>
     </li>
   )

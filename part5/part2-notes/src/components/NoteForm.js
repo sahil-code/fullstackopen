@@ -13,14 +13,14 @@ const NoteForm = ({ notes, setNotes }) => {
     const notePosted = await noteService.create({
       content: newNote,
       date: new Date().toISOString(),
-      important: Math.random() > 0.5,
+      important: false
     })
     setNotes(notes.concat(notePosted))
     setNewNote('')
   }
 
   return (
-    <Togglable buttonLabel='new note' ref={noteFormRef}>
+    <Togglable buttonLabel='new-note' ref={noteFormRef}>
       <h2>Create a new note</h2>
 
       <form onSubmit={addNote}>
