@@ -31,7 +31,9 @@ const App = () => {
   return (
     <div>
       <h1>blogs</h1>
-      <Notification notification={notif} />
+      {notif.message &&
+        <Notification notification={notif} />
+      }
       {user === null ?
         <LoginForm setUser={setUser} setNotification={setNotif} /> :
         <div>

@@ -12,10 +12,10 @@ const Blog = ({ blog, updateLikes, user, deleteBlog }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       <div>
         {blog.title} {blog.author}
-        <button onClick={() => setShowDetails(!showDetails)}>
+        <button id="toggleView-button" onClick={() => setShowDetails(!showDetails)}>
           {showDetails ? 'hide' : 'view'}
         </button>
       </div>
@@ -23,9 +23,9 @@ const Blog = ({ blog, updateLikes, user, deleteBlog }) => {
         <div className="DetailContent">
           <p>{blog.url}</p>
           <p>likes {blog.likes}
-            <button onClick={() => updateLikes(blog)}>like</button></p>
+            <button  id="like-button" onClick={() => updateLikes(blog)}>like</button></p>
           <p>{blog.user.name}
-            {blog.user.username === user.username && (<button onClick={() => {
+            {blog.user.username === user.username && (<button  id="delete-button" onClick={() => {
               if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) { deleteBlog(blog.id) }
             }}>delete</button>
             )}

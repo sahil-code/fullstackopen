@@ -10,7 +10,11 @@ const BlogList = ({ blogs, setBlogs, setNotification, user }) => {
       setBlogs(newBlogs)
     }
     catch (exception) {
-      setNotification('error' + exception.response.data.error)
+      setNotification({
+        message: 'error' + exception.response.data.error,
+        type: 'error'
+      })
+      setTimeout(() => { setNotification({}) }, 5000)
     }
   }
 
@@ -19,10 +23,18 @@ const BlogList = ({ blogs, setBlogs, setNotification, user }) => {
       await blogService.remove(blogId)
       const updatedBlogs = blogs.filter((blog) => blog.id !== blogId)
       setBlogs(updatedBlogs)
-      setNotification('Blog removed')
+      setNotification({
+        message: 'Blog removed',
+        type: 'message'
+      })
+      setTimeout(() => { setNotification({}) }, 5000)
     }
     catch (exception) {
-      setNotification('error' + exception.response.data.error)
+      setNotification({
+        message: 'error' + exception.response.data.error,
+        type: 'error'
+      })
+      setTimeout(() => { setNotification({}) }, 5000)
     }
   }
 

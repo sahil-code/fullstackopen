@@ -22,19 +22,23 @@ const LoginForm = ({ setUser, setNotification }) => {
     }
 
     catch (exception) {
-      setNotification('Wrong credentials')
-      setTimeout(() => { setNotification(null) }, 5000)
+      setNotification({
+        message: 'Wrong credentials',
+        type: 'error'
+      })
+      setTimeout(() => { setNotification({}) }, 5000)
     }
   }
 
   return (
-    <Togglable buttonLabel='login'>
+    <Togglable buttonLabel='login' initState={true}>
       <h2>Login</h2>
 
       <form onSubmit={handleLogin}>
         <div>
           username
           <input
+            id='username'
             value={username}
             onChange={({ target }) => setUsername(target.value)}
           />
@@ -42,12 +46,13 @@ const LoginForm = ({ setUser, setNotification }) => {
         <div>
           password
           <input
+            id='password'
             type="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit">login</button>
+        <button id="login-button" type="submit">login</button>
       </form>
     </Togglable>
   )

@@ -30,37 +30,43 @@ const BlogForm = ({ blogs, setBlogs, setNotification }) => {
         type: 'message'
       })
       setTimeout(() => {
-        setNotification({
-          message: null,
-          type: 'error'
-        })
+        setNotification({})
       }, 5000)
     }
     catch (exception) {
-      setNotification('error' + exception.response.data.error)
+      setNotification({
+        message: 'error' + exception.response.data.error,
+        type: 'error'
+      })
+      setTimeout(() => {
+        setNotification({})
+      }, 5000)
     }
   }
 
   const blogFormRef = useRef()
 
   return (
-    <Togglable buttonLabel='new note' ref={blogFormRef}>
+    <Togglable buttonLabel='new blog' ref={blogFormRef} initState={false} >
       <h2>create new</h2>
       <form onSubmit={addBlog}>
         title:
         <input
+          id='title'
           value={title}
           onChange={(event) => { setTitle(event.target.value) }}
           placeholder='write title here'
         /> <br></br>
         author:
         <input
+          id='author'
           value={author}
           onChange={(event) => { setAuthor(event.target.value) }}
           placeholder='write author here'
         /> <br></br>
         url:
         <input
+          id='url'
           value={url}
           onChange={(event) => { setUrl(event.target.value) }}
           placeholder='write url here'

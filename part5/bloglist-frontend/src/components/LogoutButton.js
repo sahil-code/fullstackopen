@@ -14,12 +14,7 @@ const LogoutButton = ({ user, setUser, setNotification }) => {
         message: 'Error Logging Out',
         type: 'error'
       })
-      setTimeout(() => {
-        setNotification({
-          message: null,
-          type: 'error'
-        })
-      }, 5000)
+      setTimeout(() => { setNotification({}) }, 5000)
     }
   }
 
