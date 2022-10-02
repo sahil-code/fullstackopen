@@ -9,7 +9,7 @@ const anecdoteReducer = createSlice({
       state.push(action.payload)
     },
     updateAnecdote(state, action) {
-      return state.map(n => n.id !== action.payload ? n : action.payload)
+      return state.map(n => n.id !== action.payload.id ? n : action.payload)
     },
     setAnecdotes(state, action) {
       return action.payload

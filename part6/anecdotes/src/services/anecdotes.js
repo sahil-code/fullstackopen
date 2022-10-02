@@ -14,7 +14,6 @@ const createNew = async (text) => {
 }
 
 const increaseVote = async (id) => {
-  console.log(id);
   const originalAnecdote = await axios.get(`${baseUrl}/${id}`)
   const updatedAnecdote = { ...originalAnecdote.data, votes: originalAnecdote.data.votes + 1}
   const response = await axios.put(`${baseUrl}/${id}`, updatedAnecdote)
