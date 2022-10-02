@@ -13,5 +13,4 @@ const Notification = (props) => {
   )
 }
 
-const ConnectedNotification = connect(state => ({ notification: state.notification }))(Notification)
-export default ConnectedNotification
+export default connect(state => ({ notification: state.notification }))(Notification)

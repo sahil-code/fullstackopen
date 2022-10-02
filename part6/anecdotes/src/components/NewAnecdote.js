@@ -20,6 +20,4 @@ const NewAcedote = (props) => {
   )
 }
 
-const ConnectedNewAnecdote = connect(null, {createAnecdote, setNotification})(NewAcedote)
-
-export default ConnectedNewAnecdote
+export default connect(null, {createAnecdote, setNotification})(NewAcedote)

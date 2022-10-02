@@ -35,5 +35,4 @@ const mapStateToProps = (state) => {
   return {anecdotes: [...state.anecdotes].filter(a => a.text.includes(state.filter)).sort((a, b) => b.votes - a.votes)}
 }
 
-const ConnectedAnecdotes = connect(mapStateToProps, { voteFor, setNotification})(Anecdotes)
-export default ConnectedAnecdotes
+export default connect(mapStateToProps, { voteFor, setNotification})(Anecdotes)
