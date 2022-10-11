@@ -9,7 +9,13 @@ test('<BlogForm /> closes toggle after submitting form', async () => {
   const setNotification = jest.fn()
   const user = userEvent.setup()
 
-  render(<BlogForm blogs={[]} setBlogs={setBlogs} setNotification={setNotification} />)
+  render(
+    <BlogForm
+      blogs={[]}
+      setBlogs={setBlogs}
+      setNotification={setNotification}
+    />
+  )
 
   const button = screen.getByText('new note')
   await user.click(button)
@@ -24,5 +30,4 @@ test('<BlogForm /> closes toggle after submitting form', async () => {
 
   const element = screen.queryByRole('textbox')
   expect(element).toBeNull()
-
 })

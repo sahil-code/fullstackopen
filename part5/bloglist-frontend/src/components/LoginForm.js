@@ -5,40 +5,39 @@ import Togglable from '../components/Togglable'
 import PropTypes from 'prop-types'
 
 const LoginForm = ({ setUser, setNotification }) => {
-
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({ username, password, })
+      const user = await loginService.login({ username, password })
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
-    }
-
-    catch (exception) {
+    } catch (exception) {
       setNotification({
         message: 'Wrong credentials',
-        type: 'error'
+        type: 'error',
       })
-      setTimeout(() => { setNotification({}) }, 5000)
+      setTimeout(() => {
+        setNotification({})
+      }, 5000)
     }
   }
 
   return (
-    <Togglable buttonLabel='login' initState={true}>
+    <Togglable buttonLabel="login" initState={true}>
       <h2>Login</h2>
 
       <form onSubmit={handleLogin}>
         <div>
           username
           <input
-            id='username'
+            id="username"
             value={username}
             onChange={({ target }) => setUsername(target.value)}
           />
@@ -46,13 +45,15 @@ const LoginForm = ({ setUser, setNotification }) => {
         <div>
           password
           <input
-            id='password'
+            id="password"
             type="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button id="login-button" type="submit">login</button>
+        <button id="login-button" type="submit">
+          login
+        </button>
       </form>
     </Togglable>
   )
@@ -60,7 +61,7 @@ const LoginForm = ({ setUser, setNotification }) => {
 
 LoginForm.propTypes = {
   setUser: PropTypes.func.isRequired,
-  setNotification: PropTypes.func.isRequired
+  setNotification: PropTypes.func.isRequired,
 }
 
 export default LoginForm

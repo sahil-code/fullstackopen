@@ -31,17 +31,29 @@ const App = () => {
   return (
     <div>
       <h1>blogs</h1>
-      {notif.message &&
-        <Notification notification={notif} />
-      }
-      {user === null ?
-        <LoginForm setUser={setUser} setNotification={setNotif} /> :
+      {notif.message && <Notification notification={notif} />}
+      {user === null ? (
+        <LoginForm setUser={setUser} setNotification={setNotif} />
+      ) : (
         <div>
-          <LogoutButton user={user} setUser={setUser} setNotification={setNotif} />
-          <BlogForm blogs={blogs} setBlogs={setBlogs} setNotification={setNotif} />
+          <LogoutButton
+            user={user}
+            setUser={setUser}
+            setNotification={setNotif}
+          />
+          <BlogForm
+            blogs={blogs}
+            setBlogs={setBlogs}
+            setNotification={setNotif}
+          />
         </div>
-      }
-      <BlogList blogs={blogs} setBlogs={setBlogs} setNotification={setNotif} user={user} />
+      )}
+      <BlogList
+        blogs={blogs}
+        setBlogs={setBlogs}
+        setNotification={setNotif}
+        user={user}
+      />
     </div>
   )
 }

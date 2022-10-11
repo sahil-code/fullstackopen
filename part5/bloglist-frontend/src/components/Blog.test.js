@@ -10,7 +10,7 @@ describe('Blog', () => {
     author: 'mr. a',
     url: 'abcd.com',
     likes: 2,
-    user: '63065a601bce4137e65ca412'
+    user: '63065a601bce4137e65ca412',
   }
 
   beforeEach(() => {
@@ -22,7 +22,6 @@ describe('Blog', () => {
   })
 
   test('at start the url is not displayed', () => {
-
     const element = screen.queryByText(testBlog.url)
     expect(element).toBeNull()
   })
@@ -33,7 +32,6 @@ describe('Blog', () => {
     await user.click(button)
 
     await screen.findByText(testBlog.url)
-
   })
 
   test('toggled content can be closed', async () => {
@@ -47,5 +45,4 @@ describe('Blog', () => {
     const element = screen.queryByText(testBlog.url)
     expect(element).toBeNull()
   })
-
 })

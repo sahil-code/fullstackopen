@@ -1,20 +1,20 @@
 import blogService from '../services/blogs'
 
 const LogoutButton = ({ user, setUser, setNotification }) => {
-
   const handleLogout = async (event) => {
     event.preventDefault()
     try {
       window.localStorage.removeItem('loggedBlogappUser')
       blogService.setToken(null)
       setUser(null)
-    }
-    catch (exception) {
+    } catch (exception) {
       setNotification({
         message: 'Error Logging Out',
-        type: 'error'
+        type: 'error',
       })
-      setTimeout(() => { setNotification({}) }, 5000)
+      setTimeout(() => {
+        setNotification({})
+      }, 5000)
     }
   }
 
