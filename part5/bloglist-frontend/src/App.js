@@ -1,61 +1,38 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { connect } from 'react-redux'
+
+import { initializeBlogs } from './reducers/blogReducer'
+import { initializeUser } from './reducers/userReducer'
+import { useDispatch } from 'react-redux'
+
 import BlogList from './components/BlogList'
-import blogService from './services/blogs'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import LogoutButton from './components/LogoutButton'
 
-const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
-  const [notif, setNotif] = useState({})
-
+const App = (props) => {
+  const dispatch = useDispatch()
   useEffect(() => {
-    const fetchBlogs = async () => {
-      const blogs = await blogService.getAll()
-      setBlogs(blogs)
-    }
-    fetchBlogs()
-  }, [])
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
+    dispatch(initializeBlogs())
+    dispatch(initializeUser())
+  }, [dispatch])
 
   return (
     <div>
       <h1>blogs</h1>
-      {notif.message && <Notification notification={notif} />}
-      {user === null ? (
-        <LoginForm setUser={setUser} setNotification={setNotif} />
+      <Notification />
+      {props.user === null ? (
+        <LoginForm />
       ) : (
         <div>
-          <LogoutButton
-            user={user}
-            setUser={setUser}
-            setNotification={setNotif}
-          />
-          <BlogForm
-            blogs={blogs}
-            setBlogs={setBlogs}
-            setNotification={setNotif}
-          />
+          <LogoutButton />
+          <BlogForm />
         </div>
       )}
-      <BlogList
-        blogs={blogs}
-        setBlogs={setBlogs}
-        setNotification={setNotif}
-        user={user}
-      />
+      <BlogList />
     </div>
   )
 }
 
-export default App
+export default connect((state) => ({ user: state.user }), null)(App)

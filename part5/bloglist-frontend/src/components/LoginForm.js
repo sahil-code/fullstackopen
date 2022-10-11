@@ -1,31 +1,23 @@
 import { useState } from 'react'
-import loginService from '../services/login'
-import blogService from '../services/blogs'
-import Togglable from '../components/Togglable'
-import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
-const LoginForm = ({ setUser, setNotification }) => {
+import { setNotification } from '../reducers/notificationReducer'
+import { loginUser } from '../reducers/userReducer'
+import Togglable from '../components/Togglable'
+
+const LoginForm = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({ username, password })
-
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
+      props.loginUser({ username, password })
+      props.setNotification({ message: `${username} logged in`, type: 'message' })
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setNotification({
-        message: 'Wrong credentials',
-        type: 'error',
-      })
-      setTimeout(() => {
-        setNotification({})
-      }, 5000)
+      props.setNotification({ message: 'Wrong credentials', type: 'error' })
     }
   }
 
@@ -59,9 +51,4 @@ const LoginForm = ({ setUser, setNotification }) => {
   )
 }
 
-LoginForm.propTypes = {
-  setUser: PropTypes.func.isRequired,
-  setNotification: PropTypes.func.isRequired,
-}
-
-export default LoginForm
+export default connect(null, { loginUser, setNotification })(LoginForm)

@@ -1,29 +1,33 @@
-import blogService from '../services/blogs'
+import { connect } from 'react-redux'
+import { logoutUser } from '../reducers/userReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
-const LogoutButton = ({ user, setUser, setNotification }) => {
+const LogoutButton = (props) => {
   const handleLogout = async (event) => {
     event.preventDefault()
     try {
-      window.localStorage.removeItem('loggedBlogappUser')
-      blogService.setToken(null)
-      setUser(null)
+      props.logoutUser()
+      props.setNotification({
+        message: 'Logged Out',
+        type: 'message',
+      })
     } catch (exception) {
-      setNotification({
+      props.setNotification({
         message: 'Error Logging Out',
         type: 'error',
       })
-      setTimeout(() => {
-        setNotification({})
-      }, 5000)
     }
   }
 
   return (
     <p>
-      {user.name} logged-in
+      {props.user.name} logged-in
       <button onClick={handleLogout}>logout</button>
     </p>
   )
 }
 
-export default LogoutButton
+export default connect((state) => ({ user: state.user }), {
+  logoutUser,
+  setNotification,
+})(LogoutButton)

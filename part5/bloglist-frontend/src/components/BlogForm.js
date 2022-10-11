@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react'
-import blogService from '../services/blogs'
 import Togglable from '../components/Togglable'
-import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { setNotification } from '../reducers/notificationReducer'
+import { createBlog } from '../reducers/blogReducer'
 
-const BlogForm = ({ blogs, setBlogs, setNotification }) => {
+const BlogForm = (props) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -12,33 +13,25 @@ const BlogForm = ({ blogs, setBlogs, setNotification }) => {
     event.preventDefault()
     blogFormRef.current.toggleVisibility()
 
-    const newBlog = await blogService.create({
-      title: title,
-      author: author,
-      url: url,
-      likes: 0,
-    })
     try {
-      console.log('adding new blog')
-      setBlogs(blogs.concat(newBlog))
+      props.createBlog({
+        title: title,
+        author: author,
+        url: url,
+        likes: 0,
+      })
+      props.setNotification({
+        message: `Added ${title} by ${author}`,
+        type: 'message',
+      })
       setAuthor('')
       setTitle('')
       setUrl('')
-      setNotification({
-        message: `Added ${newBlog.title} by ${newBlog.author}`,
-        type: 'message',
-      })
-      setTimeout(() => {
-        setNotification({})
-      }, 5000)
     } catch (exception) {
-      setNotification({
-        message: 'error' + exception.response.data.error,
+      props.setNotification({
+        message: 'error',
         type: 'error',
       })
-      setTimeout(() => {
-        setNotification({})
-      }, 5000)
     }
   }
 
@@ -84,10 +77,4 @@ const BlogForm = ({ blogs, setBlogs, setNotification }) => {
   )
 }
 
-BlogForm.propTypes = {
-  blogs: PropTypes.array.isRequired,
-  setBlogs: PropTypes.func.isRequired,
-  setNotification: PropTypes.func.isRequired,
-}
-
-export default BlogForm
+export default connect(null, { createBlog, setNotification })(BlogForm)
