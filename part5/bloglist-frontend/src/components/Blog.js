@@ -1,22 +1,18 @@
-import { useState } from 'react'
 import { connect } from 'react-redux'
-import { voteFor, deleteBlog } from '../reducers/blogReducer'
+import { voteFor, deleteBlog, commentOn } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { useMatch } from 'react-router-dom'
 
-const Blog = ({ blog, ...props }) => {
-  const [showDetails, setShowDetails] = useState(false)
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
+const Blog = (props) => {
+  const match = useMatch('/blogs/:id')
+  const blog = props.blogs.find((b) => b.id === match.params.id)
+  if (!blog) {
+    return null
   }
 
-  const updateLikes = async (blogToUpdate) => {
+  const updateLikes = async (id) => {
     try {
-      props.voteFor(blogToUpdate)
+      props.voteFor(id)
       props.setNotification({ message: 'blog liked', type: 'message' })
     } catch (exception) {
       props.setNotification({
@@ -41,12 +37,29 @@ const Blog = ({ blog, ...props }) => {
     }
   }
 
-  const BlogDetails = () => (
-    <div className="DetailContent">
+  const addComment = async (event) => {
+    event.preventDefault()
+    const content = {
+      id: blog.id,
+      comment: event.target.comment.value
+    }
+    event.target.comment.value = ''
+    props.commentOn(content)
+    props.setNotification({
+      message: 'added comment!',
+      type: 'message',
+    })
+  }
+
+  return (
+    <div className="blog">
+      <h1>
+        {blog.title}, {blog.author}
+      </h1>
       <p>{blog.url}</p>
       <p>
         likes {blog.likes}
-        <button id="like-button" onClick={() => updateLikes(blog)}>
+        <button id="like-button" onClick={() => updateLikes(blog.id)}>
           like
         </button>
       </p>
@@ -67,25 +80,24 @@ const Blog = ({ blog, ...props }) => {
           </button>
         )}
       </p>
-    </div>
-  )
-
-  return (
-    <div style={blogStyle} className="blog">
-      {blog.title} {blog.author}
-      <button
-        id="toggleView-button"
-        onClick={() => setShowDetails(!showDetails)}
-      >
-        {showDetails ? 'hide' : 'view'}
-      </button>
-      {showDetails && <BlogDetails />}
+      <h2>comments</h2>
+      <form onSubmit={addComment}>
+        <input name="comment" />
+        <button type="submit">add comment</button>
+      </form>
+      <ul>
+        {blog.comments.map((comment, i) => (
+          <li key={i}>{comment}</li>
+        ))}
+      </ul>
+      <p></p>
     </div>
   )
 }
 
-export default connect((state) => ({ user: state.user }), {
+export default connect((state) => ({ user: state.user, blogs: state.blogs }), {
   voteFor,
   deleteBlog,
+  commentOn,
   setNotification,
 })(Blog)

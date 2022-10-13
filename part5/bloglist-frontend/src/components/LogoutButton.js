@@ -20,10 +20,10 @@ const LogoutButton = (props) => {
   }
 
   return (
-    <p>
+    <span>
       {props.user.name} logged-in
       <button onClick={handleLogout}>logout</button>
-    </p>
+    </span>
   )
 }
 

@@ -54,4 +54,11 @@ export const deleteBlog = (content) => {
   }
 }
 
+export const commentOn = (content) => {
+  return async (dispatch) => {
+    const newNote = await blogService.addComment(content)
+    dispatch(updateBlog(newNote))
+  }
+}
+
 export default blogReducer.reducer
