@@ -4,6 +4,11 @@
 /node_modules
 /.pnp
 .pnp.js
+cypress.config.js
+prettier.config.js
+.eslintignore
+.prettierignore
+.eslintrc.js
 
 # testing
 /coverage

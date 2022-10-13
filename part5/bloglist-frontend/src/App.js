@@ -28,7 +28,7 @@ const App = (props) => {
   }
 
   return (
-    <div>
+    <div className="container">
       <h1>blogs</h1>
       <Notification />
       <div>
