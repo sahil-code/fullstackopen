@@ -7,5 +7,10 @@ const getAll = async () => {
   return request.data
 }
 
-const userService = { getAll }
+const create = async (newObject) => {
+  const response = await axios.post(baseUrl, newObject)
+  return response.data
+}
+
+const userService = { getAll, create }
 export default userService

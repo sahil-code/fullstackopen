@@ -2,17 +2,16 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { sortBlogs } from '../reducers/blogReducer'
 import BlogForm from './BlogForm'
-import { Table } from 'react-bootstrap'
+import { Table, Button } from 'react-bootstrap'
 
 const BlogList = (props) => {
 
 
   return (
-    <div>
+    <div className="d-grid gap-2">
+      <h2>List of Blogs</h2>
       <BlogForm />
-      <button onClick={() => props.sortBlogs()}>sort blogs</button>
-      <h2>Blogs</h2>
-
+      <Button onClick={() => props.sortBlogs()}>sort blogs</Button>
       <Table striped>
         <tbody>
           {props.blogs.map((blog) => (

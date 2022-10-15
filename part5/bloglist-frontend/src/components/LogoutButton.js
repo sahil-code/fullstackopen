@@ -1,29 +1,26 @@
 import { connect } from 'react-redux'
 import { logoutUser } from '../reducers/userReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { Button } from 'react-bootstrap'
 
 const LogoutButton = (props) => {
   const handleLogout = async (event) => {
     event.preventDefault()
     try {
       props.logoutUser()
-      props.setNotification({
-        message: 'Logged Out',
-        type: 'message',
-      })
+      props.setNotification({ message: 'Logged Out' })
     } catch (exception) {
-      props.setNotification({
-        message: 'Error Logging Out',
-        type: 'error',
-      })
+      props.setNotification({ error: 'error' + exception.response.data.error })
     }
   }
 
   return (
-    <span>
-      {props.user.name} logged-in
-      <button onClick={handleLogout}>logout</button>
-    </span>
+    <em style={{ verticalAlign: 'middle', textAlign: 'right' }}>
+      {props.user.name} logged-in{' '}
+      <Button variant="secondary" size="sm" onClick={handleLogout}>
+        logout
+      </Button>
+    </em>
   )
 }
 

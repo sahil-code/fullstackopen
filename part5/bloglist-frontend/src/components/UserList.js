@@ -1,14 +1,16 @@
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { Table } from 'react-bootstrap'
 
 const UserList = (props) => {
   return (
     <div>
-      <table>
+      <Table striped>
         <thead>
           <tr>
-            <td>user</td>
-            <td>number of blogs</td>
+            <th>user</th>
+            <th>number of blogs</th>
+            <th>most liked blog</th>
           </tr>
         </thead>
         <tbody>
@@ -18,10 +20,11 @@ const UserList = (props) => {
                 <Link to={`/users/${user.id}`}>{user.name}</Link>
               </td>
               <td>{user.blogs.length}</td>
+              <td>{user.blogs.length > 0 ? user.blogs.reduce((highest, current) => highest.likes > current.likes ? highest : current).title : '-'}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   )
 }

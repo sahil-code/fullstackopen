@@ -1,78 +1,46 @@
-import { useState, useRef } from 'react'
 import Togglable from '../components/Togglable'
 import { connect } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+
 import { setNotification } from '../reducers/notificationReducer'
 import { createBlog } from '../reducers/blogReducer'
+import useField from './UseField'
+import { Form, Button } from 'react-bootstrap'
 
 const BlogForm = (props) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const title = useField('title', 'text')
+  const author = useField('author', 'text')
+  const url = useField('url', 'text')
+  const navigate = useNavigate()
 
   const addBlog = async (event) => {
     event.preventDefault()
-    blogFormRef.current.toggleVisibility()
-
     try {
-      props.createBlog({
-        title: title,
-        author: author,
-        url: url,
+      console.log(title)
+      const newBlog = await props.createBlog({
+        title: title.value,
+        author: author.value,
+        url: url.value,
         likes: 0,
       })
-      props.setNotification({
-        message: `Added ${title} by ${author}`,
-        type: 'message',
-      })
-      setAuthor('')
-      setTitle('')
-      setUrl('')
+      props.setNotification({ message: `Added ${title.value}` })
+      navigate(`/blogs/${newBlog.id}`)
     } catch (exception) {
-      props.setNotification({
-        message: 'error',
-        type: 'error',
-      })
+      props.setNotification({ error: 'error' + exception.response.data.error })
     }
   }
 
-  const blogFormRef = useRef()
-
   return (
-    <Togglable buttonLabel="new blog" ref={blogFormRef} initState={false}>
+    <Togglable className="d-grid gap-2" buttonLabel="new blog" initState={false}>
       <h2>create new</h2>
-      <form onSubmit={addBlog}>
-        title:
-        <input
-          id="title"
-          value={title}
-          onChange={(event) => {
-            setTitle(event.target.value)
-          }}
-          placeholder="write title here"
-        />{' '}
-        <br></br>
-        author:
-        <input
-          id="author"
-          value={author}
-          onChange={(event) => {
-            setAuthor(event.target.value)
-          }}
-          placeholder="write author here"
-        />{' '}
-        <br></br>
-        url:
-        <input
-          id="url"
-          value={url}
-          onChange={(event) => {
-            setUrl(event.target.value)
-          }}
-          placeholder="write url here"
-        />{' '}
-        <br></br>
-        <button type="submit">save</button>
-      </form>
+      <Form onSubmit={addBlog}>
+        {title.formelement}
+        {author.formelement}
+        {url.formelement}
+        <Button variant="primary" type="submit">
+          Save
+        </Button>
+      </Form>
     </Togglable>
   )
 }

@@ -1,23 +1,24 @@
-import { useState } from 'react'
 import { connect } from 'react-redux'
-
 import { setNotification } from '../reducers/notificationReducer'
 import { loginUser } from '../reducers/userReducer'
 import Togglable from '../components/Togglable'
+import { useNavigate } from 'react-router-dom'
+import useField from './UseField'
+import { Form, Button } from 'react-bootstrap'
 
 const LoginForm = (props) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const username = useField('username', 'text')
+  const password = useField('password', 'password')
+  const navigate = useNavigate()
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      props.loginUser({ username, password })
-      props.setNotification({ message: `${username} logged in`, type: 'message' })
-      setUsername('')
-      setPassword('')
+      props.loginUser({ username: username.value, password: password.value })
+      props.setNotification({ message: `${username.value} logged in` })
+      navigate('/')
     } catch (exception) {
-      props.setNotification({ message: 'Wrong credentials', type: 'error' })
+      props.setNotification({ error: 'error' + exception.response.data.error })
     }
   }
 
@@ -25,28 +26,20 @@ const LoginForm = (props) => {
     <Togglable buttonLabel="login" initState={true}>
       <h2>Login</h2>
 
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            id="username"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button id="login-button" type="submit">
-          login
-        </button>
-      </form>
+      <Form onSubmit={handleLogin}>
+        {username.formelement}
+        {password.formelement}
+        <Button variant="primary" type="submit">
+          Save
+        </Button>
+        <Button
+          onClick={() => {
+            navigate('/create')
+          }}
+        >
+          Create New Account
+        </Button>
+      </Form>
     </Togglable>
   )
 }
