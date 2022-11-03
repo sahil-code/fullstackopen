@@ -1,8 +1,9 @@
-const Authors = (props) => {
-  if (!props.show) {
+import BornForm from './BornForm'
+
+const Authors = ({ show, authors }) => {
+  if (!show) {
     return null
   }
-  const authors = []
 
   return (
     <div>
@@ -23,6 +24,11 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
+      <BornForm
+        setError={() => {
+          console.log('error!')
+        }}
+      />
     </div>
   )
 }
