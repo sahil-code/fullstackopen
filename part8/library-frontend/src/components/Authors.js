@@ -28,6 +28,7 @@ const Authors = ({ show, authors }) => {
         setError={() => {
           console.log('error!')
         }}
+        authors={authors.map((a) => a.name)}
       />
     </div>
   )

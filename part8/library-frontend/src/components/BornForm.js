@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
+import Select from 'react-select'
 
 import { EDIT_BORN, ALL_AUTHORS } from '../queries'
 
-const BornForm = ({ setError }) => {
+const BornForm = ({ setError, authors }) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
 
   const [editAuthor, result] = useMutation(EDIT_BORN, {
-    refetchQueries: [{ query: ALL_AUTHORS }]
+    refetchQueries: [{ query: ALL_AUTHORS }],
   })
 
   const submit = (event) => {
@@ -31,14 +32,14 @@ const BornForm = ({ setError }) => {
 
       <form onSubmit={submit}>
         <div>
-          name{' '}
-          <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
+          name
+          <Select
+            onChange={(target) => setName(target.value)}
+            options={authors.map((a) => ({ value: a, label: a }))}
           />
         </div>
         <div>
-          born{' '}
+          born
           <input
             value={born}
             onChange={({ target }) => setBorn(target.value)}
