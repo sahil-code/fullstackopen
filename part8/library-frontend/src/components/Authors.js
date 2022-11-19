@@ -1,10 +1,15 @@
 import BornForm from './BornForm'
+import { useQuery } from '@apollo/client'
+import { ALL_AUTHORS } from '../queries'
 
-const Authors = ({ show, authors }) => {
-  if (!show) {
+const Authors = ({ show }) => {
+  const personsResult = useQuery(ALL_AUTHORS)
+
+  if (!show || personsResult.loading) {
     return null
   }
 
+  const authors = personsResult.data.allAuthors
   return (
     <div>
       <h2>authors</h2>

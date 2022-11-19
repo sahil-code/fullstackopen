@@ -74,11 +74,9 @@ const resolvers = {
     allBooks: async (root, args) => {
       let params = {}
       if (args.genre) {
-        params.genres = { $in: [args.genre] } 
+        params.genres = { $in: [args.genre] }
       }
-      let books = await Book.find(params).populate(
-        'author'
-      )
+      let books = await Book.find(params).populate('author')
       if (args.author) {
         books = books.filter((book) => book.author.name === args.author)
       }
@@ -86,16 +84,16 @@ const resolvers = {
     },
     allAuthors: async (root, args) => {
       const authors = await Author.find({})
-      const books = await Book.find({}).populate('author')
-      const authorsToReturn = authors.map((a) => ({
-        ...a._doc,
-        id: a._doc._id,
-        bookCount: books.filter((b) => b.author.name === a.name).length,
-      }))
-      return authorsToReturn
+      return authors
     },
     me: (root, args, context) => {
       return context.currentUser
+    },
+  },
+  Author: {
+    bookCount: async (root) => {
+      const books = await Book.find({}).populate('author')
+      return books.filter((b) => b.author.name === root.name).length
     },
   },
   Mutation: {
