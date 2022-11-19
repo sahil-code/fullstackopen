@@ -1,31 +1,33 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
 
-import { ALL_BOOKS_GENRE } from '../queries'
+import { ALL_BOOKS_GENRE, ME } from '../queries'
 
-const Books = ({ show, genres }) => {
+const Books = ({ show, curPage, genres }) => {
   const [curGenre, setCurGenre] = useState('')
   const [booksFiltered, setBooksFiltered] = useState()
+  const user = useQuery(ME)
 
   const booksWithFilter = useQuery(ALL_BOOKS_GENRE, {
-    variables: {
-      genre: curGenre,
-    },
+    variables: { genre: curGenre },
     manual: true,
   })
+
   useEffect(() => {
-    if (!booksWithFilter.loading) {
+    if (curPage === 'reccs' && user.data.me.favouriteGenre) {
+      setCurGenre(user.data.me.favoriteGenre)
+    }
+  }, [curPage, user])
+
+  useEffect(() => {
+    async function refreshFilter() {
+      await booksWithFilter.refetch()
       setBooksFiltered(booksWithFilter.data.allBooks)
     }
+    if (!booksWithFilter.loading) {
+      refreshFilter()
+    }
   }, [booksWithFilter])
-
-  const changeGenre = async (newGenre) => {
-    console.log(newGenre)
-    await setCurGenre(newGenre)
-    console.log(curGenre)
-    await booksWithFilter.refetch()
-    setBooksFiltered(booksWithFilter.data.allBooks)
-  }
 
   if (!show) {
     return null
@@ -50,14 +52,18 @@ const Books = ({ show, genres }) => {
           ))}
         </tbody>
       </table>
-      {genres.map((genre) => (
-        <button key={genre} onClick={() => changeGenre(genre)}>
-          {genre}
-        </button>
-      ))}
-      <button key="all" onClick={() => changeGenre('')}>
-        all genres
-      </button>
+      {curPage === 'books' && (
+        <div>
+          {genres.map((genre) => (
+            <button key={genre} onClick={() => setCurGenre(genre)}>
+              {genre}
+            </button>
+          ))}
+          <button key="all" onClick={() => setCurGenre('')}>
+            all genres
+          </button>
+        </div>
+      )}
     </div>
   )
 }

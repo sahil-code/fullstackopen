@@ -1,4 +1,4 @@
-import { useState,  } from 'react'
+import { useState } from 'react'
 import { useQuery, useApolloClient } from '@apollo/client'
 
 import Authors from './components/Authors'
@@ -39,6 +39,7 @@ const App = () => {
           <button onClick={() => setPage('login')}>login</button>
         ) : (
           <span>
+            <button onClick={() => setPage('reccs')}>reccs</button>
             <button onClick={() => setPage('add')}>add book</button>
             <button onClick={logout}>logout</button>
           </span>
@@ -56,7 +57,8 @@ const App = () => {
         authors={personsResult.data.allAuthors}
       />
 
-      <Books show={page === 'books'} genres={genres}  />
+      <Books show={page === 'books'} curPage={page} genres={genres} />
+      <Books show={page === 'reccs'} curPage={page} genres={genres} />
 
       <NewBook show={page === 'add'} />
     </div>
