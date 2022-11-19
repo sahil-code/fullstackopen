@@ -1,17 +1,21 @@
-const {
-  ApolloServer,
-  UserInputError,
-  AuthenticationError,
-  gql,
-} = require('apollo-server')
+const { ApolloServer } = require('apollo-server-express')
+const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
+const { makeExecutableSchema } = require('@graphql-tools/schema')
+
+const express = require('express')
+const http = require('http')
 const mongoose = require('mongoose')
-const Person = require('./models/person')
-const User = require('./models/user')
-require('dotenv').config()
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
+const { execute, subscribe } = require('graphql')
+const { WebSocketServer } = require('ws')
+const { useServer } = require('graphql-ws/lib/use/ws')
+
+const User = require('./models/user')
+const typeDefs = require('./schema')
+const resolvers = require('./resolvers')
 
 const JWT_SECRET = process.env.JWT_SECRET
-console.log('connecting to', process.env.MONGODB_URI)
 
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -22,149 +26,54 @@ mongoose
     console.log('error connection to MongoDB:', error.message)
   })
 
-const typeDefs = gql`
-  enum YesNo {
-    YES
-    NO
-  }
-  type Address {
-    street: String!
-    city: String!
-  }
-  type Person {
-    name: String!
-    phone: String
-    address: Address!
-    id: ID!
-  }
-  type User {
-    username: String!
-    friends: [Person!]!
-    id: ID!
-  }
-  type Token {
-    value: String!
-  }
-  type Query {
-    personCount: Int!
-    allPersons(phone: YesNo): [Person!]!
-    findPerson(name: String!): Person
-    me: User
-  }
-  type Mutation {
-    addPerson(
-      name: String!
-      phone: String
-      street: String!
-      city: String!
-    ): Person
-    editNumber(name: String!, phone: String!): Person
-    createUser(username: String!): User
-    login(username: String!, password: String!): Token
-    addAsFriend(name: String!): User
-  }
-`
+const start = async () => {
+  const app = express()
+  const httpServer = http.createServer(app)
 
-const resolvers = {
-  Query: {
-    personCount: async () => Person.collection.countDocuments(),
-    allPersons: async (root, args) => {
-      if (!args.phone) {
-        return Person.find({})
+  const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: '/',
+  })
+  const serverCleanup = useServer({ schema }, wsServer)
+
+  const server = new ApolloServer({
+    schema,
+    context: async ({ req }) => {
+      const auth = req ? req.headers.authorization : null
+      if (auth && auth.toLowerCase().startsWith('bearer ')) {
+        const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET)
+        const currentUser = await User.findById(decodedToken.id).populate(
+          'friends'
+        )
+        return { currentUser }
       }
-      return Person.find({ phone: { $exists: args.phone === 'YES' } })
     },
-    findPerson: async (root, args) => Person.findOne({ name: args.name }),
-    me: (root, args, context) => {
-      return context.currentUser
-    },
-  },
-  Person: {
-    address: (root) => {
-      return {
-        street: root.street,
-        city: root.city,
-      }
-    },
-  },
-  Mutation: {
-    addPerson: async (root, args, context) => {
-      const person = new Person({ ...args })
-      const currentUser = context.currentUser
-      if (!currentUser) {
-        throw new AuthenticationError('not authenticated')
-      }
-      try {
-        await person.save()
-        currentUser.friends = currentUser.friends.concat(person)
-        await currentUser.save()
-      } catch (error) {
-        throw new UserInputError(error.message, { invalidArgs: args })
-      }
-      return person
-    },
-    editNumber: async (root, args) => {
-      const person = await Person.findOne({ name: args.name })
-      person.phone = args.phone
-      try {
-        await person.save()
-      } catch (error) {
-        throw new UserInputError(error.message, { invalidArgs: args })
-      }
-      return person
-    },
-    createUser: async (root, args) => {
-      const user = new User({ username: args.username })
-      return user.save().catch((error) => {
-        throw new UserInputError(error.message, {
-          invalidArgs: args,
-        })
-      })
-    },
-    login: async (root, args) => {
-      const user = await User.findOne({ username: args.username })
-      if (!user || args.password !== 'secret') {
-        throw new UserInputError('wrong credentials')
-      }
-      const userForToken = {
-        username: user.username,
-        id: user._id,
-      }
-      return { value: jwt.sign(userForToken, JWT_SECRET) }
-    },
-    addAsFriend: async (root, args, { currentUser }) => {
-      const isFriend = (person) =>
-        currentUser.friends
-          .map((f) => f._id.toString())
-          .includes(person._id.toString())
-      if (!currentUser) {
-        throw new AuthenticationError('not authenticated')
-      }
-      const person = await Person.findOne({ name: args.name })
-      if (!isFriend(person)) {
-        currentUser.friends = currentUser.friends.concat(person)
-      }
-      await currentUser.save()
-      return currentUser
-    },
-  },
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose()
+            },
+          }
+        },
+      },
+    ],
+  })
+
+  await server.start()
+
+  server.applyMiddleware({
+    app,
+    path: '/',
+  })
+
+  httpServer.listen(process.env.PORT, () =>
+    console.log(`Server is now running on http://localhost:${process.env.PORT}`)
+  )
 }
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: async ({ req }) => {
-    const auth = req ? req.headers.authorization : null
-    if (auth && auth.toLowerCase().startsWith('bearer ')) {
-      const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET)
-      const currentUser = await User.findById(decodedToken.id).populate(
-        'friends'
-      )
-      return { currentUser }
-    }
-  },
-})
-
-server.listen().then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-})
+start()
