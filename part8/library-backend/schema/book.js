@@ -21,7 +21,11 @@ extend type Mutation{
     author: String!
     genres: [String!]!
   ): Book
-}`
+}
+extend type Subscription{
+  bookAdded: Book!
+}
+`
 
 const resolvers = {
   Query: {

@@ -1,10 +1,9 @@
+const { UserInputError } = require('apollo-server')
 const User = require('../models/user')
 
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET
-
-const { UserInputError } = require('apollo-server')
 
 typeDef = `
 type User {
@@ -21,7 +20,8 @@ extend type Query{
 extend type Mutation{
   createUser(username: String!, favouriteGenre: String!): User
   login(username: String!, password: String!): Token
-}`
+}
+`
 
 const resolvers = {
   Query: {

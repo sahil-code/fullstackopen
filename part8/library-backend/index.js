@@ -1,10 +1,15 @@
-const { ApolloServer } = require('apollo-server')
+const { ApolloServer } = require('apollo-server-express')
+const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
+
+const express = require('express')
+const http = require('http')
+
 const mongoose = require('mongoose')
 
 const schema = require('./schema/schema')
+const context = require('./schema/context')
 
 require('dotenv').config()
-const JWT_SECRET = process.env.JWT_SECRET
 console.log('connecting to', process.env.MONGODB_URI)
 
 mongoose
@@ -16,8 +21,26 @@ mongoose
     console.log('error connection to MongoDB:', error.message)
   })
 
-const server = new ApolloServer(schema)
+const start = async () => {
+  const app = express()
+  const httpServer = http.createServer(app)
 
-server.listen().then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-})
+  const server = new ApolloServer({
+    schema,
+    context,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  })
+
+  await server.start()
+
+  server.applyMiddleware({
+    app,
+    path: '/',
+  })
+
+  httpServer.listen(process.env.PORT, () =>
+    console.log(`Server is now running on http://localhost:${process.env.PORT}`)
+  )
+}
+
+start()
