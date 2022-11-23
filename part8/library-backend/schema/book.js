@@ -1,6 +1,8 @@
 const Book = require('../models/book')
 const Author = require('../models/author')
 const { UserInputError, AuthenticationError } = require('apollo-server')
+const { PubSub } = require('graphql-subscriptions')
+const pubsub = new PubSub()
 
 typeDef = `
 type Book {
@@ -61,8 +63,31 @@ const resolvers = {
       }
       const newbook = new Book({ ...args, author: author })
       await newbook.save()
+      author.books = author.books.concat(newbook._id)
+      await author.save()
+      pubsub.publish('BOOK_ADDED', { bookAdded: newbook })
       return newbook
     },
+    // updateBackend: async () => {
+    //   let books = []
+    //   const updateAuthor = async (book) => {
+    //     const books = await Book.find({}).populate('author')
+
+    //     for (const book of books) {
+    //       let author = await Author.findOne({ name: book.author.name })
+    //       author.books = author.books.concat(book._id)
+    //       console.log(book.title, ' added to ', author.name)
+    //       await author.save()
+    //       console.log(`done saving`, author.name)
+    //     }
+    //   }
+
+    //   updateAuthor()
+    //   return books
+    // },
+  },
+  Subscription: {
+    bookAdded: { subscribe: () => pubsub.asyncIterator('BOOK_ADDED') },
   },
 }
 

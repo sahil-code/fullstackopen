@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useQuery } from '@apollo/client'
+import { useQuery, useSubscription } from '@apollo/client'
 
-import { ALL_BOOKS_GENRE, ME, ALL_BOOKS } from '../queries'
+import { ME, ALL_BOOKS, BOOK_ADDED } from '../queries'
+import { updateCache } from './updateCache'
 
 const Books = ({ show, curPage }) => {
   const [curGenre, setCurGenre] = useState('')
@@ -9,16 +10,17 @@ const Books = ({ show, curPage }) => {
   const user = useQuery(ME)
 
   const booksResult = useQuery(ALL_BOOKS)
-  const booksWithFilter = useQuery(ALL_BOOKS_GENRE, {
+  const booksWithFilter = useQuery(ALL_BOOKS, {
     variables: { genre: curGenre },
     manual: true,
   })
 
   useEffect(() => {
     if (curPage === 'reccs' && user.data.me.favouriteGenre) {
-      setCurGenre(user.data.me.favoriteGenre)
+      setCurGenre(user.data.me.favouriteGenre)
     }
-  }, [curPage, user])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   useEffect(() => {
     async function refreshFilter() {
@@ -30,13 +32,23 @@ const Books = ({ show, curPage }) => {
     }
   }, [booksWithFilter])
 
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const bookAdded = data.data.bookAdded
+      console.log(`${bookAdded.title} added`)
+      updateCache(client.cache, { query: ALL_BOOKS }, bookAdded)
+    },
+  })
+
   if (!show || booksResult.loading || user.loading) {
     return null
   }
   return (
     <div>
       <h2>books</h2>
-      {curPage === 'reccs' && <div>your favourite genre is {curGenre}, recommending</div>}
+      {curPage === 'reccs' && (
+        <div>your favourite genre is {curGenre}, recommending</div>
+      )}
       <table>
         <tbody>
           <tr>

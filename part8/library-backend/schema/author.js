@@ -7,7 +7,8 @@ type Author {
   name: String!
   id: ID!
   born: Int
-  bookCount: Int
+  books: [Book]
+  bookCount: Int!
 }
 extend type Query{
   authorCount: Int!
@@ -22,15 +23,12 @@ const resolvers = {
   Query: {
     authorCount: (root, args) => Author.collection.countDocuments(),
     allAuthors: async (root, args) => {
-      const authors = await Author.find({})
+      const authors = await Author.find({}).populate('books')
       return authors
     },
   },
   Author: {
-    bookCount: async (root) => {
-      const books = await Book.find({}).populate('author')
-      return books.filter((b) => b.author.name === root.name).length
-    },
+    bookCount: (root) => root.books.length,
   },
   Mutation: {
     editAuthor: async (root, args, { currentUser }) => {
