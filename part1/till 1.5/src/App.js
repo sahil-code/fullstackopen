@@ -22,10 +22,10 @@ const App = () => {
         {parts[0].name} {parts[0].exercises}
       </p>
       <p>
-        {parts[0].name} {parts[0].exercises}
+        {parts[0].name} {parts[1].exercises}
       </p>
       <p>
-        {parts[0].name} {parts[0].exercises}
+        {parts[0].name} {parts[2].exercises}
       </p>
       <p>Number of exercises {parts[0].exercises + parts[1].exercises + parts[2].exercises}</p>
     </div>
